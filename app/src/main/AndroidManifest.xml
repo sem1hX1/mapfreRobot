@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Aramayı otomatik açmak için -->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <!-- Arama durumunu (çalıyor / açıldı / kapandı) görmek için -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- Gelen aramanın numarasını görmek için -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:icon="@android:drawable/sym_action_call"
+        android:theme="@android:style/Theme.Material.Light.DarkActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Gelen aramaları dinler. Sadece hedef numaraya tepki verir. -->
+        <receiver
+            android:name=".PhoneStateReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Kaydırma ve # tuşuna basma işini yapar. -->
+        <service
+            android:name=".AutoAccessibilityService"
+            android:exported="false"
+            android:label="@string/accessibility_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_config" />
+        </service>
+    </application>
+</manifest>

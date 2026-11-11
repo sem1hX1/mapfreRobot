@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mapfre Oto Cevap</string>
+    <string name="accessibility_label">Mapfre Oto Cevap</string>
+    <string name="accessibility_desc">Sadece ayarlarda girilen Mapfre robot numarası aradığında aramayı açar ve # tuşuna basar. Diğer aramalara, SMS\'lere ve uygulamalara dokunmaz.</string>
+</resources>
