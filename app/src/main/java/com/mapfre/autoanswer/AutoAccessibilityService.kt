@@ -22,7 +22,9 @@ class AutoAccessibilityService : AccessibilityService() {
         private val ANSWER_LABELS = listOf("cevapla", "yanıtla", "yanitla", "answer", "kabul et", "accept")
         private val KEYPAD_LABELS = listOf("tuş takımı", "tus takimi", "tuş takımını", "klavye", "tuşlar",
             "keypad", "dialpad", "dial pad", "numara tuşları")
-        private val HASH_DESCS = listOf("#", "pound", "hash", "kare", "diyez")
+        private val HASH_WORDS = listOf("pound", "hash", "kare", "diyez")
+        /** Samsung arama ekranı paketi (A51 / One UI). Önce burada aranır. */
+        private const val SAMSUNG_INCALL = "com.samsung.android.incallui"
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -111,6 +113,7 @@ class AutoAccessibilityService : AccessibilityService() {
             handler.postDelayed({ pressHash(attempt + 1) }, 1500)
         } else {
             Prefs(this).log("HATA: # tuşu bulunamadı (arama ekranı tanınmadı)")
+            dumpScreen()
         }
     }
 
@@ -118,7 +121,28 @@ class AutoAccessibilityService : AccessibilityService() {
         val text = n.text?.toString()?.trim().orEmpty()
         val desc = n.contentDescription?.toString()?.trim()?.lowercase(tr).orEmpty()
         val id = n.viewIdResourceName.orEmpty().lowercase()
-        text == "#" || desc in HASH_DESCS || desc.startsWith("#") || id.endsWith("/pound") || id.contains("pound")
+        text == "#" || desc == "#" || desc.startsWith("#") ||
+            HASH_WORDS.any { desc.contains(it) } || id.contains("pound") || id.endsWith("/hash")
+    }
+
+    /** Teşhis: ekrandaki düğmeleri loga yazar, sorun olursa buradan düzeltilir. */
+    private fun dumpScreen() {
+        val seen = mutableListOf<String>()
+        val roots = mutableListOf<AccessibilityNodeInfo>()
+        try { windows?.forEach { w -> w.root?.let { roots.add(it) } } } catch (_: Exception) {}
+        for (root in roots) {
+            if (root.packageName == packageName) continue
+            val q = ArrayDeque<AccessibilityNodeInfo>(); q.add(root)
+            while (q.isNotEmpty() && seen.size < 25) {
+                val n = q.removeFirst()
+                val t = (n.text ?: n.contentDescription)?.toString()?.trim().orEmpty()
+                val id = n.viewIdResourceName?.substringAfter(":id/").orEmpty()
+                if (n.isVisibleToUser && (t.isNotEmpty() || n.isClickable) && (t.isNotEmpty() || id.isNotEmpty()))
+                    seen.add("[$t|$id]")
+                for (i in 0 until n.childCount) n.getChild(i)?.let { q.add(it) }
+            }
+        }
+        Prefs(this).log("Ekrandakiler: " + seen.joinToString(" "))
     }
 
     // ---------- Yardımcılar ----------
@@ -131,6 +155,8 @@ class AutoAccessibilityService : AccessibilityService() {
         val roots = mutableListOf<AccessibilityNodeInfo>()
         try { windows?.forEach { w -> w.root?.let { roots.add(it) } } } catch (_: Exception) {}
         rootInActiveWindow?.let { roots.add(it) }
+        // Samsung arama ekranını öne al
+        roots.sortBy { r -> if (r.packageName?.toString()?.contains("incallui") == true) 0 else 1 }
 
         for (root in roots) {
             if (root.packageName == packageName) continue

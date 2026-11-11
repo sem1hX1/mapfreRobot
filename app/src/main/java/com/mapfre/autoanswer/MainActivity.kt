@@ -99,22 +99,22 @@ class MainActivity : Activity() {
         }
 
         // --- Kaydırma ---
-        title("3) Kaydırma yedeği (genelde gerekmez)")
+        title("3) Kaydırma yedeği (Samsung A51 için ayarlı, genelde gerekmez)")
         col.addView(TextView(this).apply {
             text = "Sistem aramayı açamazsa kullanılır. Değerler ekranın yüzdesi: X soldan sağa, Y yukarıdan aşağıya."
         })
-        val sx = numberField("Başlangıç X %", prefs.swipeStartX.toString()) { prefs.swipeStartX = pct(it, 50) }
-        val sy = numberField("Başlangıç Y %", prefs.swipeStartY.toString()) { prefs.swipeStartY = pct(it, 85) }
-        val ex = numberField("Bitiş X %", prefs.swipeEndX.toString()) { prefs.swipeEndX = pct(it, 50) }
-        val ey = numberField("Bitiş Y %", prefs.swipeEndY.toString()) { prefs.swipeEndY = pct(it, 40) }
+        val sx = numberField("Başlangıç X %", prefs.swipeStartX.toString()) { prefs.swipeStartX = pct(it, 25) }
+        val sy = numberField("Başlangıç Y %", prefs.swipeStartY.toString()) { prefs.swipeStartY = pct(it, 84) }
+        val ex = numberField("Bitiş X %", prefs.swipeEndX.toString()) { prefs.swipeEndX = pct(it, 25) }
+        val ey = numberField("Bitiş Y %", prefs.swipeEndY.toString()) { prefs.swipeEndY = pct(it, 55) }
 
         fun save() {
             prefs.targetNumber = numberEdit.text.toString().trim()
             prefs.hashDelaySec = delayEdit.text.toString().toIntOrNull()?.coerceIn(0, 30) ?: 4
-            prefs.swipeStartX = pct(sx.text.toString(), 50)
-            prefs.swipeStartY = pct(sy.text.toString(), 85)
-            prefs.swipeEndX = pct(ex.text.toString(), 50)
-            prefs.swipeEndY = pct(ey.text.toString(), 40)
+            prefs.swipeStartX = pct(sx.text.toString(), 25)
+            prefs.swipeStartY = pct(sy.text.toString(), 84)
+            prefs.swipeEndX = pct(ex.text.toString(), 25)
+            prefs.swipeEndY = pct(ey.text.toString(), 55)
         }
 
         button("💾 Kaydet") {

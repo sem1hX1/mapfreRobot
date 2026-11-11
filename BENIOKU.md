@@ -41,3 +41,18 @@ Uygulamadaki **Son işlemler** logu her adımı yazar:
 - "# tuşu bulunamadı" → Telefonun arama ekranındaki tuş takımı düğmesinin adı farklı. Bana markayı/modeli söyle, ekleyelim.
 - "# basıldı ✔" ama robot kabul etmiyor → bekleme süresini artır (ör. 6 sn).
 - Hiç log yok → numara yanlış girilmiş ya da erişilebilirlik servisi kapanmış.
+
+## Samsung Galaxy A51 ayarları
+- **Erişilebilirlik:** Ayarlar → Erişilebilirlik → Yüklü uygulamalar → Mapfre Oto Cevap → Aç.
+  "Kısıtlı ayar" uyarısı çıkarsa: Ayarlar → Uygulamalar → Mapfre Oto Cevap → sağ üst ⋮ → Kısıtlı ayarlara izin ver.
+- **Pil:** Ayarlar → Pil ve cihaz bakımı → Pil → Arka plan kullanım sınırları → **Hiç uyumayan uygulamalar** → Mapfre Oto Cevap'ı ekle.
+- **Uygulama pili:** Ayarlar → Uygulamalar → Mapfre Oto Cevap → Pil → **Kısıtlanmamış**.
+- **Otomatik optimizasyon:** Pil ve cihaz bakımı → ⋮ → Otomasyon → "Otomatik optimizasyon" kapalı olsun
+  (yoksa Samsung gece yeniden başlatıp servisi kapatabilir; kapanırsa uygulamayı bir kez açman yeter).
+- Kaydırma yedeği varsayılanı A51 içindir: yeşil telefon düğmesi (sol alt) yukarı sürüklenir.
+
+## Test etmek (Mapfre aramasını beklemeden)
+1. Robot numarası yerine geçici olarak başka bir telefonun numarasını yaz → Kaydet.
+2. O telefondan A51'i ara, telefon masada ekranı açık/kapalı fark etmez.
+3. A51 aramayı kendiliğinden açmalı, ~4 sn sonra arayan tarafta # tuş sesi duyulmalı.
+4. Log'da "# tuşuna basıldı ✔" görünmeli. Sonra gerçek Mapfre numarasını geri yaz.

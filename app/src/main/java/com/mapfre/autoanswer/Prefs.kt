@@ -25,16 +25,16 @@ class Prefs(context: Context) {
 
     /** Kaydırma yedeği: ekran oranı olarak (yüzde) başlangıç ve bitiş noktaları. */
     var swipeStartX: Int
-        get() = sp.getInt("sx", 50)
+        get() = sp.getInt("sx", 25)
         set(v) = sp.edit().putInt("sx", v).apply()
     var swipeStartY: Int
-        get() = sp.getInt("sy", 85)
+        get() = sp.getInt("sy", 84)
         set(v) = sp.edit().putInt("sy", v).apply()
     var swipeEndX: Int
-        get() = sp.getInt("ex", 50)
+        get() = sp.getInt("ex", 25)
         set(v) = sp.edit().putInt("ex", v).apply()
     var swipeEndY: Int
-        get() = sp.getInt("ey", 40)
+        get() = sp.getInt("ey", 55)
         set(v) = sp.edit().putInt("ey", v).apply()
 
     fun log(msg: String) {
