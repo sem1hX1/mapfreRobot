@@ -85,7 +85,7 @@ class AutoAccessibilityService : AccessibilityService() {
 
         val hash = findHashKey()
         if (hash != null) {
-            if (click(hash)) prefs.log("# tuşuna basıldı ✔") else prefs.log("# bulundu ama basılamadı")
+            tapHash(hash)
             return
         }
 
@@ -100,8 +100,7 @@ class AutoAccessibilityService : AccessibilityService() {
             prefs.log("Tuş takımı açıldı")
             handler.postDelayed({
                 val h = findHashKey()
-                if (h != null && click(h)) prefs.log("# tuşuna basıldı ✔")
-                else retry(attempt)
+                if (h != null) tapHash(h) else retry(attempt)
             }, 900)
         } else {
             retry(attempt)
@@ -115,6 +114,36 @@ class AutoAccessibilityService : AccessibilityService() {
             Prefs(this).log("HATA: # tuşu bulunamadı (arama ekranı tanınmadı)")
             dumpScreen()
         }
+    }
+
+    /**
+     * Samsung tuş takımı tuş sesini (DTMF) sadece gerçek dokunuşta gönderir,
+     * erişilebilirlik "tıkla" komutunda göndermez. Bu yüzden #'in ekrandaki yerine
+     * parmakla basılmış gibi dokunuyoruz.
+     */
+    private fun tapHash(node: AccessibilityNodeInfo) {
+        val prefs = Prefs(this)
+        val r = Rect()
+        node.getBoundsInScreen(r)
+        val info = "metin='${node.text ?: ""}' açıklama='${node.contentDescription ?: ""}' " +
+            "id='${node.viewIdResourceName?.substringAfter(":id/") ?: ""}' paket='${node.packageName}' konum=$r"
+        if (r.isEmpty) {
+            prefs.log("# bulundu ama konumu yok ($info)")
+            return
+        }
+        val path = Path().apply { moveTo(r.exactCenterX(), r.exactCenterY()) }
+        val g = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 150))
+            .build()
+        val ok = dispatchGesture(g, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                prefs.log("# tuşuna dokunuldu ✔ ($info)")
+            }
+            override fun onCancelled(gestureDescription: GestureDescription?) {
+                prefs.log("# dokunuşu iptal edildi ($info)")
+            }
+        }, null)
+        if (!ok) prefs.log("# dokunuşu gönderilemedi ($info)")
     }
 
     private fun findHashKey(): AccessibilityNodeInfo? = findNode { n ->
